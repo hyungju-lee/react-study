@@ -1,0 +1,26 @@
+$mainColor: #ff0000;
+
+.red {
+  color: $mainColor;
+}
+
+.my-alert {
+  width: 100%;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 5px;
+  background-color: #eee;
+  p {
+    margin-bottom: 0;
+  }
+}
+
+.my-alert2 {
+  @extend .my-alert;
+  background-color: #ffe591;
+}
+
+@mixin name {
+
+}

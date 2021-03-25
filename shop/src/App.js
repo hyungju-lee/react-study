@@ -105,7 +105,7 @@ function Item(props) {
 function Loading() {
     const arr = [];
     for (let i=0; i<3; i++) {
-        arr.push(<div>로딩중입니다.</div>)
+        arr.push(<div key={i}>로딩중입니다.</div>)
     }
     return arr;
 }

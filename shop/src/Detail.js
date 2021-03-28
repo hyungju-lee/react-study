@@ -1,7 +1,10 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
+import {Nav} from 'react-bootstrap';
 import {useHistory, useParams} from "react-router-dom";
 import styled from 'styled-components';
 import './Detail.scss';
+import {stockContext} from './App';
+import { CSSTransition } from 'react-transition-group';
 
 let Box = styled.div`
   padding: 20px;
@@ -16,6 +19,10 @@ function Detail(props) {
 
     let [alert, alertEdit] = useState(true);
     let [value, valueEdit] = useState("");
+    let stock = useContext(stockContext);
+
+    let [tab, tabEdit] = useState(0);
+    let [onOff, onOffEdit] = useState(false);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -88,8 +95,45 @@ function Detail(props) {
                     }}>뒤로가기</button>
                 </div>
             </div>
+
+            <Nav className="mt-5" variant="tabs" defaultActiveKey="link-0">
+                <Nav.Item>
+                    <Nav.Link eventKey="link-0" onClick={() => {
+                        tabEdit(0);
+                        // 이미 처음 이 페이지, 컴포넌트 로드될 때 TabContent 로드되면서 CSSTransition의 in 속성 값은 true로 바뀌어있음
+                        // TabContent에 useEffect 훅으로 인해 로드될 때 in 속성을 true로 바꿨으니깐.
+                        // 즉, 그래서 그대로 냅두면 애니메이션은 효과는 실행이 안됨
+                        // 그래서 버튼 클릭할 때마다 다시 false로 바꾸고 -> TabContent 컴포넌트 로드될 때 true로 바뀌면서 애니메이션 실행
+                        onOffEdit(false);
+                    }}>Active</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey="link-1" onClick={() => {
+                        tabEdit(1);
+                        onOffEdit(false);
+                    }}>Option 2</Nav.Link>
+                </Nav.Item>
+            </Nav>
+
+            <CSSTransition in={onOff} classNames="wow" timeout={1000}>
+            <TabContent tabNum={tab} onOffEdit={onOffEdit} />
+            </CSSTransition>
+
         </div>
     )
+}
+
+function TabContent(props) {
+
+    useEffect(() => {
+        props.onOffEdit(true);
+    })
+
+    if (props.tabNum === 0) {
+        return <div>0번째 내용입니다.</div>
+    } else if (props.tabNum === 1) {
+        return <div>1번째 내용입니다.</div>
+    }
 }
 
 function Info(props) {

@@ -1,11 +1,17 @@
 import {Nav, Navbar, NavDropdown, Jumbotron, Button} from 'react-bootstrap';
 import './App.css';
-import {useState} from "react";
+import React, {useContext, useState} from "react";
 import data from './data';
 import Detail from "./Detail";
 import axios from 'axios';
 
 import { Link, Route, Switch } from 'react-router-dom';
+
+// context 만들기
+// 1. React.createContext()로 범위 생성 - 범위가 뭐냐면 같은 변수값을 공유할 범위를 뜻함. React.createContext() 이걸로 그 범위를 생성
+// 2. 같은 값을 공유할 HTML을 범위로 싸매기
+// - 값 공유를 원하는 HTML들을 <범위.Provider>로 감싸고 value={공유원하는 값} 설정
+export let stockContext = React.createContext();
 
 function App() {
 
@@ -46,6 +52,9 @@ function App() {
                         </p>
                     </Jumbotron>
                     <div className="container">
+
+                        <stockContext.Provider value={stock}>
+
                         <div className="row">
                             {
                                 shoes.map((value, index, array) => {
@@ -58,6 +67,9 @@ function App() {
                                 loading === true ? <Loading /> : null
                             }
                         </div>
+
+                        </stockContext.Provider>
+
                         <button type="button" className="btn btn-primary" onClick={() => {
 
                             loadingEdit(true);
@@ -79,9 +91,13 @@ function App() {
                         }}>더보기</button>
                     </div>
                 </Route>
+
                 <Route path="/detail/:id">
+                    <stockContext.Provider value={stock}>
                     <Detail shoes={shoes} stock={stock} stockEdit={stockEdit} />
+                    </stockContext.Provider>
                 </Route>
+
                 <Route path="/:id">
                     <div>아무거나</div>
                 </Route>
@@ -93,19 +109,28 @@ function App() {
 }
 
 function Item(props) {
+
+    let stock = useContext(stockContext);
+
     return (
         <div className="col-md-4">
             <img src={`https://codingapple1.github.io/shop/shoes${props.shoe.id+1}.jpg`} alt="" width="100%"/>
             <h4>{ props.shoe.title }</h4>
             <p>{ props.shoe.content } & { props.shoe.price }</p>
+            <Test/>
         </div>
     )
+}
+
+function Test() {
+    let stock = useContext(stockContext);
+    return <p>재고: {stock}</p>
 }
 
 function Loading() {
     const arr = [];
     for (let i=0; i<3; i++) {
-        arr.push(<div key={i}>로딩중입니다.</div>)
+        arr.push(<div>로딩중입니다.</div>)
     }
     return arr;
 }

@@ -1,11 +1,14 @@
 import {Nav, Navbar, NavDropdown, Jumbotron, Button} from 'react-bootstrap';
 import './App.css';
-import React, {useContext, useState} from "react";
+import React, {useContext, useState, lazy, Suspense} from "react";
 import data from './data';
-import Detail from "./Detail";
+// import Detail from "./Detail";
 import axios from 'axios';
+import Cart from "./Cart";
 
-import { Link, Route, Switch } from 'react-router-dom';
+import {Link, Route, Switch, useHistory} from 'react-router-dom';
+
+let Detail = lazy(() => { return import('./Detail.js') });
 
 // context 만들기
 // 1. React.createContext()로 범위 생성 - 범위가 뭐냐면 같은 변수값을 공유할 범위를 뜻함. React.createContext() 이걸로 그 범위를 생성
@@ -92,9 +95,16 @@ function App() {
                     </div>
                 </Route>
 
+                <Route path="/cart">
+                    <Cart/>
+                </Route>
+
                 <Route path="/detail/:id">
                     <stockContext.Provider value={stock}>
-                    <Detail shoes={shoes} stock={stock} stockEdit={stockEdit} />
+                        {/* 로딩 전까지 보여줄 HTML을 fallback에 작성 */}
+                        <Suspense fallback={<div>로딩중이에요</div>}>
+                            <Detail shoes={shoes} stock={stock} stockEdit={stockEdit} />
+                        </Suspense>
                     </stockContext.Provider>
                 </Route>
 
@@ -111,9 +121,13 @@ function App() {
 function Item(props) {
 
     let stock = useContext(stockContext);
+    let history = useHistory();
 
     return (
-        <div className="col-md-4">
+        // 페이지 이동을 위해 history.push() 이용
+        <div className="col-md-4" onClick={() => {
+            history.push(`/detail/${props.shoe.id}`);
+        }}>
             <img src={`https://codingapple1.github.io/shop/shoes${props.shoe.id+1}.jpg`} alt="" width="100%"/>
             <h4>{ props.shoe.title }</h4>
             <p>{ props.shoe.content } & { props.shoe.price }</p>

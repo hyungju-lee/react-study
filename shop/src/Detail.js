@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import './Detail.scss';
 import {stockContext} from './App';
 import { CSSTransition } from 'react-transition-group';
+import {connect} from 'react-redux';
 
 let Box = styled.div`
   padding: 20px;
@@ -89,6 +90,18 @@ function Detail(props) {
                         const newStock = [...props.stock];
                         newStock[idNum] = newStock[idNum] - 1;
                         props.stockEdit(newStock);
+
+                        props.dispatch({
+                            type: '항목추가',
+                            payload: {
+                                id: props.shoes[idNum].id,
+                                name: props.shoes[idNum].title,
+                                quan: 1
+                            }
+                        })
+                        // 상단에 useHistory() 훅을 추가했기 때문에 아래 코드 사용가능
+                        // 페이지 이동을 강제로 시켜주는 코드
+                        history.push('/cart');
                     }}>주문하기</button>
                     <button className="btn btn-danger" onClick={() => {
                         history.goBack();
@@ -142,4 +155,13 @@ function Info(props) {
     )
 }
 
-export default Detail;
+// redux store 데이터 가져와서 props로 변환해주는 함수
+function stateProps(state) {
+    console.log(state)
+    return {
+        state: state.reducer,
+        alert: state.reducer2
+    }
+}
+
+export default connect(stateProps)(Detail);

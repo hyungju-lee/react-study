@@ -7,6 +7,7 @@ import axios from 'axios';
 import Cart from "./Cart";
 
 import {Link, Route, Switch, useHistory} from 'react-router-dom';
+import {forEach} from "react-bootstrap/ElementChildren";
 
 let Detail = lazy(() => { return import('./Detail.js') });
 
@@ -21,6 +22,7 @@ function App() {
     let [shoes, shoesEdit] = useState(data);
     let [loading, loadingEdit] = useState(false);
     let [stock, stockEdit] = useState([10, 11, 12]);
+    let [lsState, lsStateEdit] = useState(JSON.parse(localStorage.getItem('lastProducts')) || []);
 
     return (
         <div className="App">
@@ -62,7 +64,7 @@ function App() {
                             {
                                 shoes.map((value, index, array) => {
                                     return (
-                                        <Item key={index} shoe={value} />
+                                        <Item key={index} shoe={value} lsState={lsState} lsStateEdit={lsStateEdit} />
                                     )
                                 })
                             }
@@ -93,6 +95,8 @@ function App() {
                                 })
                         }}>더보기</button>
                     </div>
+
+
                 </Route>
 
                 <Route path="/cart">
@@ -113,9 +117,29 @@ function App() {
                 </Route>
             </Switch>
 
-
+            <LastProducts lsState={lsState} />
         </div>
     );
+}
+
+function LastProducts(props) {
+    return (
+        <div className="last-products">
+            {
+                props.lsState.map((value, index) => {
+                    return (
+                        // 역순으로 나열
+                        <div className="last-products-item">
+                            <em>제품번호: {props.lsState[props.lsState.length - index - 1].id}</em>
+                            <h2>제품명: {props.lsState[props.lsState.length - index - 1].title}</h2>
+                            <p>제품설명: {props.lsState[props.lsState.length - index - 1].content}</p>
+                            <p>제품가격: {props.lsState[props.lsState.length - index - 1].price}</p>
+                        </div>
+                    )
+                })
+            }
+        </div>
+    )
 }
 
 function Item(props) {
@@ -127,6 +151,22 @@ function Item(props) {
         // 페이지 이동을 위해 history.push() 이용
         <div className="col-md-4" onClick={() => {
             history.push(`/detail/${props.shoe.id}`);
+            // 로컬스토리지 저장
+            const deepCopyLsState = [...props.lsState];
+            let lsExist = -1;
+            if (deepCopyLsState.length > 0) {
+                lsExist = deepCopyLsState.findIndex((value, index, obj) => {
+                    return value.id === props.shoe.id;
+                })
+            }
+            if (lsExist !== -1) {
+                deepCopyLsState.splice(lsExist, 1);
+                deepCopyLsState.push(props.shoe);
+            } else {
+                deepCopyLsState.push(props.shoe);
+            }
+            props.lsStateEdit(deepCopyLsState);
+            localStorage.setItem("lastProducts", JSON.stringify(deepCopyLsState))
         }}>
             <img src={`https://codingapple1.github.io/shop/shoes${props.shoe.id+1}.jpg`} alt="" width="100%"/>
             <h4>{ props.shoe.title }</h4>

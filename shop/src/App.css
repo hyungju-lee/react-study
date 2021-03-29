@@ -13,6 +13,23 @@
   pointer-events: none;
 }
 
+.last-products {
+    position: fixed;
+    bottom: 50px;
+    right: 20px;
+    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    font-weight: bold;
+    font-size: 14px;
+}
+.last-products h2 {
+    font-size: 16px;
+}
+.last-products-item:not(:first-child) {
+    border-top: 1px solid #fff;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;

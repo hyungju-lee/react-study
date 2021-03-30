@@ -39,7 +39,12 @@ function Cart(props) {
                                             }
                                         })
                                     }}>+</button>
-                                    <button type="button" onClick={alertClose.bind(null, props)}>-</button>
+                                    <button type="button" onClick={() => {
+                                        props.dispatch({
+                                            type: '수량감소',
+                                            index: value.id,
+                                        })
+                                    }}>-</button>
                                 </td>
                             </tr>
                         )

@@ -56,11 +56,7 @@ function Cart(props) {
                 props.alert === true ?
                     (<div className="my-alert2">
                         <p>지금 구매하시면 신규할인 20%</p>
-                        <button type="button" onClick={() => {
-                            props.dispatch({
-                                type: 'alert닫기'
-                            })
-                        }}>닫기</button>
+                        <button type="button" onClick={alertClose.bind(null, props)}>닫기</button>
                     </div>) : null
             }
             <Parent name="존박" age="20"></Parent>
